@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[My Octopress Blog]]></title>
-  <link href="http://yoursite.com/atom.xml" rel="self"/>
-  <link href="http://yoursite.com/"/>
-  <updated>2015-01-19T17:42:22+05:30</updated>
-  <id>http://yoursite.com/</id>
+  <link href="http://mehakdeep.github.io/atom.xml" rel="self"/>
+  <link href="http://mehakdeep.github.io/"/>
+  <updated>2015-01-19T17:46:22+05:30</updated>
+  <id>http://mehakdeep.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Hello World]]></title>
-    <link href="http://yoursite.com/blog/2015/01/19/hello-world/"/>
+    <link href="http://mehakdeep.github.io/blog/2015/01/19/hello-world/"/>
     <updated>2015-01-19T17:41:22+05:30</updated>
-    <id>http://yoursite.com/blog/2015/01/19/hello-world</id>
+    <id>http://mehakdeep.github.io/blog/2015/01/19/hello-world</id>
     <content type="html"><![CDATA[
 ]]></content>
   </entry>
