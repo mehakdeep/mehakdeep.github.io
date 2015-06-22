@@ -4,6 +4,7 @@ title: "Tutorial: To-do App with RubyMotion"
 description: "An Introduction to RubyMotion with a Simple To-do App Tutorial"
 tags: ['Ruby','RubyMotion','IOS']
 author: Mehakdeep Singh
+comments: true
 ---
 
 In this post we will cover what RubyMotion is & take you through how to use it by building a simple To-Do app. It’s a longish post, so to save you some trouble here’s a simple index:
