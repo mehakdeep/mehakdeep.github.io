@@ -4,7 +4,7 @@
   <title><![CDATA[My Blog]]></title>
   <link href="http://mehakdeep.github.io/atom.xml" rel="self"/>
   <link href="http://mehakdeep.github.io/"/>
-  <updated>2015-01-19T19:52:34+05:30</updated>
+  <updated>2015-06-22T17:11:41+05:30</updated>
   <id>http://mehakdeep.github.io/</id>
   <author>
     <name><![CDATA[Mehakdeep Singh]]></name>
@@ -12,6 +12,435 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tutorial: To-do App With RubyMotion]]></title>
+    <link href="http://mehakdeep.github.io/blog/2015/06/22/tutorial-to-do-app-with-rubymotion/"/>
+    <updated>2015-06-22T00:00:00+05:30</updated>
+    <id>http://mehakdeep.github.io/blog/2015/06/22/tutorial-to-do-app-with-rubymotion</id>
+    <content type="html"><![CDATA[<p>In this post we will cover what RubyMotion is &amp; take you through how to use it by building a simple To-Do app. It’s a longish post, so to save you some trouble here’s a simple index:</p>
+
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#homework">Homework</a></li>
+<li><a href="#tutorial">Tutorial setup</a></li>
+<li><a href="#text_area">Text area &amp; table</a></li>
+<li><a href="#tasks">Add Tasks &amp; Local Db</a></li>
+<li><a href="#sections">Mark A Task As Completed</a></li>
+</ul>
+
+
+<p> <a name="introduction"></a></p>
+
+<p><strong>What is RubyMotion?</strong></p>
+
+<p>Simply put RubyMotion is a tool that allows you to write iOS apps in Ruby whilst bypassing Objective C altogether. RubyMotion compiles the Ruby code to machine code, which is same as Objective C, and thus the device can’t tell the difference between RubyMotion and the objective C iOS apps.</p>
+
+<p><strong>Why use RubyMotion?</strong></p>
+
+<p>If you know Ruby well and you want to start building iOS apps, there’s nothing better than RubyMotion. Sure you have to learn a new framework (Cocoa Touch), but that’s easier &amp; quicker than rather than learning a new language (Swift, Objective C). The icing on the cake is that RubyMotion preserves the iOS SDK exactly as intended by Apple, so all existing code examples and tutorials are perfectly translatable.</p>
+
+<p><a name="installation"></a></p>
+
+<p><strong>Installation</strong></p>
+
+<blockquote><p>&ldquo;<em><a href="http://www.RubyMotion.com/buy/index2.html?utm_expid=54787903-6.ZJfhJyorSiu-xKssExEmxA.1&utm_referrer=http://www.RubyMotion.com/buy/index2.html" title="RubyMotion">RubyMotion</a></em> is created by Hipbyte. It’s a paid software with 30 days fully functional trial, which is enough time for you to try and see if it suits you.</p></blockquote>
+
+<p>It requires Xcode, which can be downloaded from the app store. Other dependencies are iOS simulator and command line tools.</p>
+
+<p><a name="homework"></a></p>
+
+<p><strong>Homework</strong></p>
+
+<p>If you’re completely new to RubyMotion, a very good place to start is by completing the following two tutorials to build a hello world app.</p>
+
+<ul>
+<li><a href="http://www.RubyMotion.com/developers/guides/manuals/cocoa/getting-started/">getting-started</a></li>
+<li><a href="http://RubyMotion-tutorial.com/1-hello-motion">hello-motion</a></li>
+</ul>
+
+
+<div class="row"><div class='col-md-4 col-md-offset-4'><img class="img-responsive" alt="hello-iOS" src="http://mehakdeep.github.io/assets/blogs/hello-ios.png" style="margin: 20px 2px"></div></div>
+
+
+<p>Once you go through these tutorials, your key takeaways should be:</p>
+
+<ul>
+<li><code>rake</code> command is used to run app on simulator</li>
+<li>Everything that is visible on the screen is a <code>UIView</code></li>
+<li>Views can have subviews, and that can keep on going.</li>
+<li>It uses the Model-View-Controller pattern.</li>
+</ul>
+
+
+<p><a name="tutorial"></a></p>
+
+<p><strong>To-do App Tutorial: Setup</strong></p>
+
+<p>Let’s begin with our tutorial:</p>
+
+<p> <code>motion create todo</code></p>
+
+<p> Create a List Controller , which is UIViewController, right now it sets background color as white.</p>
+
+<pre><code class="Ruby">  class ListController &lt; UIViewController
+    def viewDidLoad
+      super
+      self.view.backgroundColor = UIColor.blackColor
+    end
+  end
+</code></pre>
+
+<p>Change the change app_delegate to load our new controller as root view controller.</p>
+
+<pre><code class="Ruby">  class AppDelegate
+    def application(application, didFinishLaunchingWithOptions:launchOptions)
+      @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+      @window.makeKeyAndVisible
+      @window.rootViewController = ListController.new
+      @window.rootViewController.wantsFullScreenLayout = true
+
+      $root_controller = @window.rootViewController
+      true
+    end
+  end
+</code></pre>
+
+<div class="row"><div class='col-md-4 col-md-offset-4'><img class="img-responsive" alt="todo-0" src="http://mehakdeep.github.io/assets/blogs/todo-0.png" style="margin: 20px 2px; border:3px solid black;"></div></div>
+
+
+<p><a name="text_area"></a></p>
+
+<p><strong>Add Text Area</strong></p>
+
+<p>Now we added a <code>UITextArea</code> and a <code>UIButton</code>. We call <code>add_task</code> function on button click. Which just prints a log right now.</p>
+
+<p>The rest of the code is pretty self-explanatory for Ruby users.</p>
+
+<p>Now the listcontroller looks like</p>
+
+<pre><code class="Ruby">  class ListController &lt; UIViewController
+    def viewDidLoad
+      super
+      self.view.backgroundColor = UIColor.whiteColor
+      add_text_area
+    end
+
+    def add_text_area
+      text_field_view = UITextField.alloc.initWithFrame(CGRectMake(0, 20, self.view.frame.size.width - 50, 40))
+      text_field_view.delegate = self
+      text_field_view.borderStyle = UITextBorderStyleRoundedRect
+
+      text_field_view.textColor =UIColor.blackColor
+      text_field_view.becomeFirstResponder
+
+      text_field_view.placeholder = "new task"
+      text_field_view.textAlignment = NSTextAlignmentLeft
+      self.view.addSubview(text_field_view)
+
+      #add button
+      add_task_button = UIButton.buttonWithType UIButtonTypeCustom
+      add_task_button.setFrame(CGRectMake(self.view.frame.size.width - 40, 20, 35, 40))
+      add_task_button.setTitleColor(UIColor.blackColor, forState: UIControlStateNormal)
+      add_task_button.setTitle("Add", forState: UIControlStateNormal)
+      add_task_button.addTarget(self,
+                                   action: :add_task,
+                                   forControlEvents: UIControlEventTouchUpInside)
+      self.view.addSubview add_task_button
+    end
+
+    def add_task
+      NSLog("Task Added")
+    end
+
+  end
+</code></pre>
+
+<div class="row"><div class='col-md-4 col-md-offset-4'><img class="img-responsive" alt="todo-1" src="http://mehakdeep.github.io/assets/blogs/todo-1.png" style="margin: 20px 2px; border:3px solid black;" border="5"></div></div>
+
+
+<p><strong>Add Empty Table</strong></p>
+
+<p>Now we will add an Empty <code>UITable</code> for our app. <a href="http://RubyMotion-tutorial.com/5-tables/">This</a> is a very good introduction to using tables in RubyMotion.</p>
+
+<p>First we will initialize an empty table and add it to the main view as a subview.</p>
+
+<pre><code class="Ruby">  def add_task_list
+    table_view = UITableView.alloc.initWithFrame(CGRectMake(0, 70, self.view.frame.size.width, 200))
+    table_view.dataSource = self
+    table_view.delegate = self
+    table_view.clipsToBounds = false
+    self.view.addSubview table_view
+  end
+</code></pre>
+
+<p>This function sets the values for each row in the table, which right now would be nil.</p>
+
+<pre><code class="Ruby">  def tableView(tableView, cellForRowAtIndexPath: indexPath)
+    @reuseIdentifier ||= "cell"
+    cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier)
+    cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: @reuseIdentifier)
+
+
+    cell
+  end
+</code></pre>
+
+<p>This function returns total number of rows in the table. We have hard-coded it to 10 for demo.</p>
+
+<pre><code class="Ruby">  def tableView(tableView, numberOfRowsInSection: section)
+    10
+  end
+</code></pre>
+
+<p>And the viewDidLoad now looks like this.</p>
+
+<pre><code class="Ruby">  def viewDidLoad
+    super
+    self.view.backgroundColor = UIColor.whiteColor
+    add_text_area
+    add_task_list
+  end
+</code></pre>
+
+<div class="row"><div class='col-md-4 col-md-offset-4'><img class="img-responsive" alt="todo-2" src="http://mehakdeep.github.io/assets/blogs/todo-2.png" style="margin: 20px 2px; border:3px solid black;" border="5"></div></div>
+
+
+<p><strong>Following The MVC</strong></p>
+
+<p>Now we will create a list_view in <code>app/views/</code> , which is a <code>UIView</code> and move all the code there.</p>
+
+<p>We override the <code>initWithFrame</code> function for the ListView, which is a setter for this class.</p>
+
+<pre><code class="Ruby">  def initWithFrame frame
+    super
+    add_text_area
+    add_task_list
+  end
+</code></pre>
+
+<p>And we initialize this view from our ListController.</p>
+
+<pre><code class="Ruby">  def viewDidLoad
+    super
+    self.view.backgroundColor = UIColor.whiteColor
+    list_view = ListView.alloc.initWithFrame(self.view.frame)
+    self.view.addSubview(list_view)
+  end
+</code></pre>
+
+<p><a name="tasks"></a></p>
+
+<p><strong>Adding a task</strong></p>
+
+<p>Now we will implement the function of when a task is created it gets added to the list.</p>
+
+<p><strong>using attr_accessor</strong></p>
+
+<p>Now we need to alter these views from different functions, so we will use the attr_accessor so that we can set and use attributes :)</p>
+
+<p><code>attr_accessor :text_area, :task_list, :add_task_button</code></p>
+
+<p><code>self.text_area = text_field_view</code></p>
+
+<p>Now we store the tasks in attribute which is an array and add the current text of the text_area to that array when add_task button is clicked. Then we reload the table data.</p>
+
+<pre><code class="Ruby">  def add_task
+    NSLog("Task Added")
+    self.tasks &lt;&lt; self.text_area.text
+    self.task_list.reloadData
+  end
+</code></pre>
+
+<p>Select appropriate value for the table row.</p>
+
+<pre><code class="Ruby">  def tableView(tableView, cellForRowAtIndexPath: indexPath)
+    @reuseIdentifier ||= "cell"
+    cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier)
+    cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: @reuseIdentifier)
+
+
+    cell.textLabel.text = "#{self.tasks[indexPath.row]}"
+
+    cell
+  end
+</code></pre>
+
+<div class="row"><div class='col-md-4 col-md-offset-4'><img class="img-responsive" alt="todo-3" src="http://mehakdeep.github.io/assets/blogs/todo-3.png" style="margin: 20px 2px; border:3px solid black;" border="5"></div></div>
+
+
+<p><strong>Add Local Database</strong></p>
+
+<p>In its current stage the app will not store any data. That means when you restart the app, all the tasks will be gone.
+We will create local storage with NanoStore as DB. And Cocoapods to integrate the nanostore.</p>
+
+<ul>
+<li><a href="https://github.com/tciuro/NanoStore">NanoStore</a></li>
+<li><a href="https://github.com/siuying/NanoStoreInMotion">NanoStoreInMotion</a></li>
+</ul>
+
+
+<p>Add required gems to Gemfile</p>
+
+<p><code>gem 'motion-cocoapods’</code></p>
+
+<p><code>gem 'nano-store'</code></p>
+
+<p>here is the RakeFile</p>
+
+<pre><code class="Ruby">  # -*- coding: utf-8 -*-
+  $:.unshift("/Library/RubyMotion/lib")
+  require 'motion/project/template/iOS'
+  require 'motion-cocoapods'
+  require 'nano-store'
+
+
+  begin
+    require 'bundler'
+    Bundler.require
+  rescue LoadError
+  end
+
+  Motion::Project::App.setup do |app|
+    # Use `rake config' to see complete project settings.
+    app.name = 'todo'
+
+    app.pods do
+      pod 'NanoStore'
+    end
+  end
+</code></pre>
+
+<p>Install the gems and pods.</p>
+
+<p><code>bundle install</code></p>
+
+<p><code>bundle exec rake pod:install</code></p>
+
+<p>And to the app_delegate add following line to set db file path.We will use a local file as DB.</p>
+
+<pre><code class="Ruby">  documents_path         = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0]
+  NanoStore.shared_store = NanoStore.store(:file, documents_path + "/nano.db")
+</code></pre>
+
+<p><strong>Bringing Models in Action</strong></p>
+
+<p>Now we will create a model for tasks and store it locally.</p>
+
+<pre><code class="Ruby">  class Task  &lt; NanoStore::Model
+    attribute :name
+    attribute :created_at
+  end
+</code></pre>
+
+<p>Loading all tasks in memory when ListView loaded.</p>
+
+<pre><code class="Ruby">  def initWithFrame frame
+    super
+    self.tasks = Task.all.sort {|a,b| b.created_at &lt;=&gt; a.created_at}
+    add_text_area
+    add_task_list
+  end
+</code></pre>
+
+<p>Create new task in the DB with add task function.</p>
+
+<pre><code class="Ruby">  def add_task
+    NSLog("Task Added")
+    task = Task.create(:name =&gt;  self.text_area.text, :created_at =&gt; Time.now)
+    self.tasks.unshift(task)
+
+    self.task_list.reloadData
+    self.text_area.text = ""
+  end
+</code></pre>
+
+<p><a name="sections"></a></p>
+
+<p><strong>Different Sections for Completed &amp; Pending Tasks</strong></p>
+
+<p>Now we will separate the table in 2 sections, completed and pending tasks. After all that is the point of a To-do app. We will set it so that clicking on a task will move it from one section to another.</p>
+
+<p>We have 2 attributes <code>:completed_tasks, :uncompleted_tasks</code></p>
+
+<p>And we initialize these 2 attrbutes with required data.</p>
+
+<pre><code class="Ruby">  self.completed_tasks = Task.find(:completed, NSFEqualTo, 1).sort { |a, b| b.created_at &lt;=&gt; a.created_at }
+  self.uncompleted_tasks = Task.find(:completed, NSFEqualTo, 0).sort { |a, b| b.created_at &lt;=&gt; a.created_at }
+</code></pre>
+
+<p>We add these 2 sections in our table “pending” and “completed”.</p>
+
+<pre><code class="Ruby">  def numberOfSectionsInTableView(tableView)
+    2
+  end
+</code></pre>
+
+<pre><code class="Ruby">  def tableView(tableView, titleForHeaderInSection: section)
+    if section == 1
+      "completed"
+    elsif section == 0
+      "pending"
+    end
+  end
+</code></pre>
+
+<pre><code class="Ruby">
+  def tableView(tableView, cellForRowAtIndexPath: indexPath)
+
+    @reuseIdentifier ||= "cell"
+    cell = tableView.dequeueReusableCellWithIdentifier(@reuseIdentifier)
+    cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: @reuseIdentifier)
+
+    if indexPath.section == 0
+      cell.textLabel.text = "#{self.uncompleted_tasks[indexPath.row].name}"
+    elsif indexPath.section == 1
+      cell.textLabel.text = "#{self.completed_tasks[indexPath.row].name}"
+    end
+    cell
+  end
+</code></pre>
+
+<pre><code class="Ruby">  def tableView(tableView, numberOfRowsInSection: section)
+    if section == 0
+      Task.find(:completed, NSFEqualTo, 0).count
+      self.uncompleted_tasks.count
+    elsif section == 1
+      Task.find(:completed, NSFEqualTo, 1).count
+    else
+      0
+    end
+  end
+</code></pre>
+
+<p>This Function handles the event when any row is clicked.</p>
+
+<pre><code class="Ruby">  def tableView(tableView, didSelectRowAtIndexPath: indexPath)
+    tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    cell = tableView.cellForRowAtIndexPath(indexPath)
+    self.mark_as_done(cell)
+  end
+</code></pre>
+
+<p>And the mark_as_done function toggles the task between completed and pending.</p>
+
+<pre><code class="Ruby">  def mark_as_done cell
+    task = Task.find(:name, NSFEqualTo, cell.textLabel.text).first
+    task.completed = !task.completed
+    task.save
+    self.reload_table_sections
+  end
+</code></pre>
+
+<div class="row"><div class='col-md-4 col-md-offset-4'><img class="img-responsive" alt="todo-4" src="http://mehakdeep.github.io/assets/blogs/todo-4.png" style="margin: 20px 2px; border:3px solid black;" border="5"></div></div>
+
+
+<p>Here is the <a href="https://github.com/mehakdeep/todo">Link</a> to the source code.</p>
+
+<p><strong>The End</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Hello World]]></title>
