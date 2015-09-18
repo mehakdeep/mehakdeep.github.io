@@ -4,7 +4,7 @@
   <title><![CDATA[My Blog]]></title>
   <link href="http://mehakdeep.github.io/atom.xml" rel="self"/>
   <link href="http://mehakdeep.github.io/"/>
-  <updated>2015-06-22T17:26:01+05:30</updated>
+  <updated>2015-09-18T12:57:19+05:30</updated>
   <id>http://mehakdeep.github.io/</id>
   <author>
     <name><![CDATA[Mehakdeep Singh]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How Mongo geoNear Saved the Day]]></title>
+    <link href="http://mehakdeep.github.io/blog/2015/09/18/how-mongo-geo-near-saved-us/"/>
+    <updated>2015-09-18T00:00:00+05:30</updated>
+    <id>http://mehakdeep.github.io/blog/2015/09/18/how-mongo-geo-near-saved-us</id>
+    <content type="html"><![CDATA[<p>The requirement was straightforward: Save users’ locations (latitudes &amp; longitudes) &amp; query against them to produce a list of nearby users within a set radius of any user.</p>
+
+<p>We chose <a href="http://redis.io/commands#geo">Redis</a> with Lua Geo Scripting, and we set up 1 master to write &amp; 2 slaves to read from. The updates were matching the incoming rate and the slaves were handling the reads, The numbers climbed up to 80,000 requests per minute.</p>
+
+<p>Then we came to know about an <a href="https://groups.google.com/forum/#!topic/redis-db/w6zcOzVtPXg">issue</a> in Redis-Geo, that it doesn&rsquo;t sync the Geo Data at all.</p>
+
+<p>The fix for this is expected in the next Redis update version <a href="http://antirez.com/news/89">3.2</a> &amp; the only temporary solution was to restart slaves, which as a force resync doesn’t really work when you have to restart slaves every minute.</p>
+
+<p>This stop gap solution wasn’t going to work, so we decided to use <a href="http://docs.mongodb.org/manual/reference/command/geoNear/">MongoDb-geoNear</a>. We set up the same 1 master &amp; 2 slaves environment and to handle the request load efficiently we made a few enhancements.</p>
+
+<p>One was introducing <a href="http://www.rabbitmq.com">Rabbitmq</a>, thus queuing up all the update requests so as to not overload Mongo &amp; leaving no chance of losing any requests.</p>
+
+<p>Another was moving Mongo to a RAM disk. Since the data size itself was not large, this step gave a huge boost in load performance, and the last one was making the correct set of indexes.</p>
+
+<p>The solution worked. We have been keeping up with the load consistently as the number of requests has only grown. The sync happens on time, and there are no more slave restarts.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tutorial: To-do App With RubyMotion]]></title>
